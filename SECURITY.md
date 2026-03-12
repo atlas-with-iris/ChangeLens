@@ -4,7 +4,7 @@
 
 If you discover a security vulnerability in ChangeLens, please report it responsibly.
 
-**Email:** atlas.with.iris@gmail.com  
+**Email:** jordanmstepp@gmail.com  
 **Subject:** `[SECURITY] ChangeLens — <brief description>`
 
 We will acknowledge receipt within 48 hours and provide a timeline for a fix.

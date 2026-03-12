@@ -473,6 +473,115 @@ h1 {
 .code-block .comment { color: var(--text-dim); }
 .code-block .key { color: var(--accent-cyan); }
 
+/* ── ORIGIN / VOUCH SECTION ─────────────────────────────────── */
+
+#origin {
+  padding: 80px 0 120px;
+}
+
+.origin-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 56px 48px;
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.origin-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-main);
+}
+
+.origin-content {
+  text-align: center;
+}
+
+.origin-badge {
+  display: inline-block;
+  padding: 6px 18px;
+  border-radius: 100px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.08);
+  color: var(--accent-purple);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 24px;
+}
+
+.origin-content h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.origin-content p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.origin-content p a {
+  color: var(--accent-purple);
+}
+
+.origin-content p a:hover {
+  color: var(--accent-cyan);
+}
+
+.origin-products {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 32px 0;
+}
+
+.origin-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 24px;
+}
+
+.origin-icon {
+  font-size: 1.5rem;
+}
+
+.origin-product div {
+  text-align: left;
+}
+
+.origin-product strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.origin-product span {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.origin-arrow {
+  color: var(--text-dim);
+  font-size: 1.3rem;
+}
+
 /* ── PRICING ───────────────────────────────────────────────────── */
 
 #pricing {
