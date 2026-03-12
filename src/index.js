@@ -23,8 +23,11 @@ import { buildImpactCard, validateImpactCard } from "./output/impactCardBuilder.
 import { formatPrComment } from "./output/prCommentFormatter.js";
 import { formatTerminal } from "./output/terminalFormatter.js";
 import { loadShieldConfig, evaluatePolicy } from "./shield/diffShield.js";
+import { loadLedger, saveLedger, recordEvent, recordMerge } from "./scar/scarLedger.js";
+import { scanForIncidents } from "./scar/scarDetector.js";
+import { generateReportsForFiles, formatScarTerminal, formatScarMarkdown } from "./scar/scarScorer.js";
 
-const VERSION = "0.2.0";
+const VERSION = "0.3.0";
 
 // ── ANSI helpers (for status messages to stderr) ──────────────────────
 
@@ -127,6 +130,64 @@ async function main() {
   let prId = "local";
   let format = "auto"; // auto = terminal if TTY, markdown if piped
   let shield = false;
+  let showScar = false;
+
+  // Check for scar-scan subcommand first
+  if (args[0] === "scar-scan") {
+    const scanRoot = args.includes("--project")
+      ? resolve(args[args.indexOf("--project") + 1])
+      : process.cwd();
+    const maxCommits = args.includes("--max-commits")
+      ? parseInt(args[args.indexOf("--max-commits") + 1], 10)
+      : 500;
+
+    if (isTTY) {
+      process.stderr.write(`\n  🩹  ${bold("Scar Scan")} — scanning git history for incident signals...\n`);
+    }
+
+    const { commits, events } = scanForIncidents(scanRoot, { maxCommits });
+    const ledger = loadLedger(scanRoot);
+
+    // Record all merges (every commit counts as a merge for file tracking)
+    for (const commit of commits) {
+      recordMerge(ledger, commit.files);
+    }
+
+    // Record detected events
+    for (const event of events) {
+      recordEvent(ledger, event);
+    }
+
+    ledger.last_scan = new Date().toISOString();
+    saveLedger(scanRoot, ledger);
+
+    // Report
+    const hotFiles = Object.entries(ledger.scars)
+      .filter(([_, s]) => s.scar_score > 0)
+      .sort((a, b) => b[1].scar_score - a[1].scar_score);
+
+    if (isTTY) {
+      process.stderr.write(`  ${cyan("▸")} Scanned ${commits.length} commits\n`);
+      process.stderr.write(`  ${cyan("▸")} Detected ${events.length} incident signal(s)\n`);
+      process.stderr.write(`  ${cyan("▸")} Tracking ${Object.keys(ledger.scars).length} file(s)\n`);
+
+      if (hotFiles.length > 0) {
+        process.stderr.write(`\n  🔥 Files with scar history:\n`);
+        for (const [filePath, scar] of hotFiles.slice(0, 15)) {
+          const pct = (scar.scar_score * 100).toFixed(1);
+          process.stderr.write(`     ${pct.padStart(5)}%  ${filePath} (${scar.incidents}/${scar.total_prs} PRs)\n`);
+        }
+      } else {
+        process.stderr.write(`\n  ✨ No incident signals detected — clean history!\n`);
+      }
+
+      process.stderr.write(`\n  ${dim("Ledger saved to .changelens/scars.json")}\n\n`);
+    } else {
+      console.log(JSON.stringify(ledger, null, 2));
+    }
+
+    process.exit(0);
+  }
 
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
@@ -174,8 +235,12 @@ ${bold("Options:")}
   --json             Shorthand for --format json
   --markdown         Shorthand for --format markdown
   --shield, -s       Run DiffShield policy check (reads .changelens.yml)
+  --scar             Show scar memory context for touched files
   --version, -v      Show version
   --help, -h         Show this help
+
+${bold("Subcommands:")}
+  scar-scan          Scan git history and build the scar ledger
 
 ${bold("Examples:")}
   ${dim("# Analyze uncommitted changes")}

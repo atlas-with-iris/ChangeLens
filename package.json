@@ -1,6 +1,6 @@
 {
   "name": "changelens",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Pre-merge change impact visualizer. Know what your PR will break — before you merge it.",
   "main": "dist/index.js",
   "type": "module",
