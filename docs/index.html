@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChangeLens — Know what your PR will break before you merge it</title>
+  <title>ChangeLens — Pre-Merge Change Impact Visualizer</title>
   <meta name="description" content="Deterministic pre-merge impact analysis for pull requests. Map your blast radius. Evidence-backed risk tiers. Zero AI. Zero dependencies.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -33,10 +34,11 @@
     <div class="container">
       <div class="hero-badge">Deterministic · Evidence-backed · Zero AI</div>
       <h1>Know what your PR will break<br><span class="gradient-text">before you merge it.</span></h1>
-      <p class="hero-sub">Not another AI reviewer. A deterministic impact layer for pull requests.<br>Map your blast radius. Get evidence-backed risk tiers. Ship with confidence.</p>
+      <p class="hero-sub">AI-generated PRs look fine… until they break production.<br>ChangeLens shows what actually changes — before merge.</p>
+      <p class="hero-sub-secondary">Not another AI reviewer. A deterministic impact layer for pull requests.<br>Map your blast radius. Get evidence-backed risk tiers. Ship with confidence.</p>
       <div class="hero-actions">
-        <a href="#pricing" class="btn btn-primary">Get Started Free</a>
-        <a href="https://github.com/atlas-with-iris/ChangeLens" class="btn btn-secondary" target="_blank">View on GitHub →</a>
+        <a href="#install" class="btn btn-primary">Get Started Free</a>
+        <a href="https://github.com/atlas-with-iris/ChangeLens" class="btn btn-secondary" target="_blank">Try in your repo →</a>
       </div>
 
       <!-- ═══ TERMINAL DEMO ═══ -->
@@ -65,20 +67,20 @@
   <section id="stats">
     <div class="container stats-grid">
       <div class="stat">
+        <span class="stat-number">0</span>
+        <span class="stat-label">False positives across 77 verified tests</span>
+      </div>
+      <div class="stat">
         <span class="stat-number">95%</span>
-        <span class="stat-label">Accuracy on 20-PR corpus</span>
-      </div>
-      <div class="stat">
-        <span class="stat-number">0</span>
-        <span class="stat-label">False positives</span>
-      </div>
-      <div class="stat">
-        <span class="stat-number">0</span>
-        <span class="stat-label">Dependencies</span>
+        <span class="stat-label">Accuracy on 20-PR validation corpus</span>
       </div>
       <div class="stat">
         <span class="stat-number">&lt;100ms</span>
-        <span class="stat-label">Analysis time</span>
+        <span class="stat-label">Analysis time — pure static analysis</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">0</span>
+        <span class="stat-label">Runtime dependencies — stdlib only</span>
       </div>
     </div>
   </section>

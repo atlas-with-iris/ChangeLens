@@ -174,8 +174,16 @@ h1 {
   font-size: 1.15rem;
   color: var(--text-secondary);
   max-width: 640px;
-  margin: 0 auto 40px;
+  margin: 0 auto 16px;
   line-height: 1.7;
+}
+
+.hero-sub-secondary {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  max-width: 580px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
 }
 
 .hero-actions {
