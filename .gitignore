@@ -26,3 +26,6 @@ npm-debug.log*
 # Coverage
 coverage/
 .nyc_output/
+
+# Scar ledger (contains git author names — keep local)
+.changelens/
