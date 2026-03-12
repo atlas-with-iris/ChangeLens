@@ -1,0 +1,56 @@
+{
+  "name": "changelens",
+  "version": "0.1.0",
+  "description": "Pre-merge change impact visualizer. Know what your PR will break — before you merge it.",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "changelens": "./dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "KNOWN_LIMITS.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "keywords": [
+    "git",
+    "diff",
+    "impact",
+    "analysis",
+    "pull-request",
+    "code-review",
+    "static-analysis",
+    "developer-tools",
+    "blast-radius",
+    "pre-merge",
+    "change-detection",
+    "import-graph"
+  ],
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "build": "node build.js",
+    "prepublishOnly": "node build.js",
+    "analyze": "node src/index.js",
+    "demo": "node src/demo.js",
+    "demo:live": "node scripts/live-demos.js",
+    "validate": "node scripts/20-pr-run.js"
+  },
+  "author": "Atlas with Iris <atlas.with.iris@gmail.com>",
+  "license": "BUSL-1.1",
+  "homepage": "https://github.com/atlas-with-iris/ChangeLens",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlas-with-iris/ChangeLens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/atlas-with-iris/ChangeLens/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.1"
+  }
+}

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChangeLens — Know what your PR will break before you merge it</title>
+  <meta name="description" content="Deterministic pre-merge impact analysis for pull requests. Map your blast radius. Evidence-backed risk tiers. Zero AI. Zero dependencies.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ═══ NAV ═══ -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">🔍</span>
+        <span class="logo-text">ChangeLens</span>
+      </a>
+      <div class="nav-links">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="https://github.com/atlas-with-iris/ChangeLens" target="_blank">GitHub</a>
+        <a href="#pricing" class="nav-cta">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <header id="hero">
+    <div class="hero-glow"></div>
+    <div class="container">
+      <div class="hero-badge">Deterministic · Evidence-backed · Zero AI</div>
+      <h1>Know what your PR will break<br><span class="gradient-text">before you merge it.</span></h1>
+      <p class="hero-sub">Not another AI reviewer. A deterministic impact layer for pull requests.<br>Map your blast radius. Get evidence-backed risk tiers. Ship with confidence.</p>
+      <div class="hero-actions">
+        <a href="#pricing" class="btn btn-primary">Get Started Free</a>
+        <a href="https://github.com/atlas-with-iris/ChangeLens" class="btn btn-secondary" target="_blank">View on GitHub →</a>
+      </div>
+
+      <!-- ═══ TERMINAL DEMO ═══ -->
+      <div class="terminal" id="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-line">
+            <span class="prompt">$</span>
+            <span class="cmd" id="typed-cmd"></span>
+            <span class="cursor" id="cursor">▋</span>
+          </div>
+          <div class="terminal-output" id="terminal-output"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ STATS BAR ═══ -->
+  <section id="stats">
+    <div class="container stats-grid">
+      <div class="stat">
+        <span class="stat-number">95%</span>
+        <span class="stat-label">Accuracy on 20-PR corpus</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">0</span>
+        <span class="stat-label">False positives</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">0</span>
+        <span class="stat-label">Dependencies</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">&lt;100ms</span>
+        <span class="stat-label">Analysis time</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <section id="how-it-works">
+    <div class="container">
+      <h2>Six steps. Fully deterministic.<br><span class="gradient-text">Same input → same output.</span></h2>
+      <p class="section-sub">No LLM inference. No cloud calls. Pure static analysis running locally on your machine.</p>
+
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="step-number">01</div>
+          <h3>Parse Diff</h3>
+          <p>Unified diff → structured file changes with symbol extraction. Functions, classes, exports — not just file names.</p>
+        </div>
+        <div class="pipeline-connector">→</div>
+        <div class="pipeline-step">
+          <div class="step-number">02</div>
+          <h3>Classify Surface</h3>
+          <p>Categorizes each changed file: API · AUTH · CONFIG · SCHEMA · UTILITY · TEST · STYLE · BUILD · DOCS</p>
+        </div>
+        <div class="pipeline-connector">→</div>
+        <div class="pipeline-step">
+          <div class="step-number">03</div>
+          <h3>Walk Graph</h3>
+          <p>BFS traversal of your import/require graph. Finds every downstream consumer of every changed file.</p>
+        </div>
+        <div class="pipeline-connector">→</div>
+        <div class="pipeline-step">
+          <div class="step-number">04</div>
+          <h3>Calculate Blast</h3>
+          <p>Surface weight × consumer count × export changes → risk tier. Conservative by design — when in doubt, flag it.</p>
+        </div>
+        <div class="pipeline-connector">→</div>
+        <div class="pipeline-step">
+          <div class="step-number">05</div>
+          <h3>Build Card</h3>
+          <p>Assembles a 9-field Impact Card with evidence, consumers, surfaces, risk tier, and merge guidance.</p>
+        </div>
+        <div class="pipeline-connector">→</div>
+        <div class="pipeline-step">
+          <div class="step-number">06</div>
+          <h3>Ship Result</h3>
+          <p>Renders as a GitHub PR comment, JSON for CI, or rich terminal output with ANSI colors.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ INSTALL / USAGE ═══ -->
+  <section id="install">
+    <div class="container">
+      <h2>Up and running in <span class="gradient-text">30 seconds.</span></h2>
+      <div class="install-grid">
+        <div class="install-card">
+          <h3>CLI</h3>
+          <div class="code-block">
+            <code><span class="prompt">$</span> git diff main | npx changelens</code>
+          </div>
+          <p>Pipe any git diff. Get an Impact Card. That's it.</p>
+          <div class="code-block">
+            <code><span class="comment"># From a diff file</span></code>
+            <code><span class="prompt">$</span> npx changelens --diff changes.patch</code>
+            <code></code>
+            <code><span class="comment"># JSON for CI pipelines</span></code>
+            <code><span class="prompt">$</span> git diff main | npx changelens --json</code>
+          </div>
+        </div>
+        <div class="install-card">
+          <h3>GitHub Action</h3>
+          <div class="code-block yaml-block">
+            <code><span class="comment"># .github/workflows/changelens.yml</span></code>
+            <code><span class="key">name:</span> ChangeLens</code>
+            <code><span class="key">on:</span> [pull_request]</code>
+            <code></code>
+            <code><span class="key">jobs:</span></code>
+            <code>  <span class="key">impact:</span></code>
+            <code>    <span class="key">runs-on:</span> ubuntu-latest</code>
+            <code>    <span class="key">permissions:</span></code>
+            <code>      <span class="key">pull-requests:</span> write</code>
+            <code>    <span class="key">steps:</span></code>
+            <code>      - <span class="key">uses:</span> actions/checkout@v4</code>
+            <code>      - <span class="key">uses:</span> atlas-with-iris/ChangeLens@v1</code>
+            <code>        <span class="key">env:</span></code>
+            <code>          <span class="key">GITHUB_TOKEN:</span> ${{ secrets.GITHUB_TOKEN }}</code>
+          </div>
+          <p>Auto-posts an Impact Card on every PR. Updates on each push.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PRICING ═══ -->
+  <section id="pricing">
+    <div class="container">
+      <h2>Simple pricing for <span class="gradient-text">deterministic impact analysis.</span></h2>
+      <p class="section-sub">Start free. Upgrade when your team wants shared visibility, policy gates, and workflow enforcement.</p>
+
+      <div class="pricing-grid">
+        <!-- FREE -->
+        <div class="price-card">
+          <div class="price-tier">Free</div>
+          <div class="price-amount">$0</div>
+          <div class="price-period">forever</div>
+          <p class="price-desc">For solo developers, open-source work, and early evaluation.</p>
+          <ul class="price-features">
+            <li>Local CLI</li>
+            <li>Basic PR Impact Card</li>
+            <li>GitHub Action / App starter setup</li>
+            <li>Personal use</li>
+            <li>Great for testing signal on real repos</li>
+          </ul>
+          <a href="https://github.com/atlas-with-iris/ChangeLens" class="btn btn-secondary" target="_blank">Get started free</a>
+        </div>
+
+        <!-- TEAM -->
+        <div class="price-card featured">
+          <div class="price-badge">Most popular</div>
+          <div class="price-tier">Team</div>
+          <div class="price-amount">$149</div>
+          <div class="price-period">per org / month</div>
+          <p class="price-desc">For teams that want shared visibility and lightweight enforcement.</p>
+          <ul class="price-features">
+            <li>Everything in Free</li>
+            <li>Shared team workspace</li>
+            <li>PR history &amp; Impact Card archive</li>
+            <li>Slack notifications</li>
+            <li>Basic policy gates</li>
+            <li>Org-level visibility across repos</li>
+            <li>Email support</li>
+          </ul>
+          <a href="mailto:atlas.with.iris@gmail.com?subject=ChangeLens Team Pilot&body=We'd like to start a team pilot for ChangeLens." class="btn btn-primary">Start team pilot</a>
+        </div>
+
+        <!-- ENTERPRISE -->
+        <div class="price-card">
+          <div class="price-tier">Enterprise</div>
+          <div class="price-amount">Custom</div>
+          <div class="price-period">by conversation</div>
+          <p class="price-desc">For organizations that need governance, control, and deeper integration.</p>
+          <ul class="price-features">
+            <li>Everything in Team</li>
+            <li>SSO</li>
+            <li>Self-hosted or private deployment</li>
+            <li>Advanced policy controls</li>
+            <li>Audit exports</li>
+            <li>Custom integrations</li>
+            <li>Priority support</li>
+          </ul>
+          <a href="mailto:atlas.with.iris@gmail.com?subject=ChangeLens Enterprise&body=We'd like to discuss enterprise options for ChangeLens." class="btn btn-secondary">Contact us</a>
+        </div>
+      </div>
+
+      <div class="pricing-faq">
+        <h3>Why is the core free?</h3>
+        <p>Because trust comes first. Teams should be able to evaluate the signal before they pay for workflow and governance.</p>
+        <h3>How do team pilots work?</h3>
+        <p>Early team plans are handled as guided pilots so we can keep the product tight and useful. We'll set you up directly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="logo-icon">🔍</span>
+          <span class="logo-text">ChangeLens</span>
+          <span class="footer-by">by <strong>Atlas with Iris</strong></span>
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/atlas-with-iris/ChangeLens" target="_blank">GitHub</a>
+          <a href="https://github.com/atlas-with-iris/ChangeLens/blob/main/KNOWN_LIMITS.md" target="_blank">Known Limits</a>
+          <a href="https://github.com/atlas-with-iris/ChangeLens/blob/main/SECURITY.md" target="_blank">Security</a>
+          <a href="https://github.com/atlas-with-iris/ChangeLens/blob/main/LICENSE" target="_blank">License (BSL 1.1)</a>
+        </div>
+      </div>
+      <div class="footer-tagline">
+        Not another AI reviewer. A deterministic impact layer for pull requests.
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

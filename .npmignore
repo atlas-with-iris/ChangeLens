@@ -1,0 +1,24 @@
+# Source code — ship dist/ only
+src/
+tests/
+scripts/
+build.js
+
+# Dev files
+.git/
+.github/
+.gitignore
+.eslintrc*
+.prettier*
+*.test.js
+*.spec.js
+
+# Action source (separate package)
+action/
+
+# Misc
+node_modules/
+coverage/
+*.log
+.env*
+.DS_Store
