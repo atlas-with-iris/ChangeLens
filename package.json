@@ -1,6 +1,6 @@
 {
   "name": "changelens",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Pre-merge change impact visualizer. Know what your PR will break — before you merge it.",
   "main": "dist/index.js",
   "type": "module",
@@ -26,7 +26,9 @@
     "blast-radius",
     "pre-merge",
     "change-detection",
-    "import-graph"
+    "import-graph",
+    "diffshield",
+    "merge-policy"
   ],
   "scripts": {
     "test": "node --test tests/**/*.test.js",

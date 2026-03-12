@@ -19,6 +19,10 @@ inputs:
     description: "Fail the check if risk tier is HIGH (default: false)"
     required: false
     default: "false"
+  shield:
+    description: "Enable DiffShield policy enforcement (default: true)"
+    required: false
+    default: "true"
 
 outputs:
   risk-tier:
@@ -27,6 +31,8 @@ outputs:
     description: "Number of downstream consumers affected"
   impact-card:
     description: "Full Impact Card as JSON"
+  shield-action:
+    description: "DiffShield verdict: evaluated or disabled"
 
 runs:
   using: "node20"

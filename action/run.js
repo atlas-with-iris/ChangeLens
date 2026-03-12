@@ -11,7 +11,7 @@
 // Uses the GitHub REST API directly — no dependencies.
 // ═══════════════════════════════════════════════════════════════════════
 
-import { readFileSync } from "fs";
+import { readFileSync, appendFileSync } from "fs";
 import { resolve } from "path";
 import https from "https";
 
@@ -63,7 +63,6 @@ function getInput(name) {
 function setOutput(name, value) {
   const outputFile = process.env.GITHUB_OUTPUT;
   if (outputFile) {
-    const { appendFileSync } = await import("fs");
     appendFileSync(outputFile, `${name}=${value}\n`);
   }
 }
@@ -95,6 +94,7 @@ async function main() {
   const projectPath = getInput("project-path") || ".";
   const maxDepth = parseInt(getInput("max-depth") || "2", 10);
   const failOnHigh = getInput("fail-on-high") === "true";
+  const shieldEnabled = getInput("shield") !== "false"; // DiffShield on by default
 
   console.log(`🔍 ChangeLens analyzing PR #${prNumber} in ${repo}`);
   console.log(`   Project: ${projectPath}, Max depth: ${maxDepth}`);
@@ -139,20 +139,62 @@ async function main() {
 
   console.log(`\n   Risk: ${card.riskTier} | Consumers: ${card.affectedConsumers.length} | Safe: ${card.safeToMerge}`);
 
+  // ── DiffShield Enforcement ────────────────────────────────────────
+  let shieldBlock = "";
+  let shieldShouldFail = false;
+
+  if (shieldEnabled) {
+    const { loadShieldConfig, evaluatePolicy, formatShieldVerdict, notifySlack } = await import("../src/shield/diffShield.js");
+    const shieldConfig = loadShieldConfig(projectRoot);
+    console.log(`   🛡️ DiffShield: mode=${shieldConfig.mode}, block_on_high=${shieldConfig.block_on_high}`);
+
+    // Fetch PR approval count
+    let approvalCount = 0;
+    try {
+      const reviewsRes = await githubRequest("GET", `/repos/${repo}/pulls/${prNumber}/reviews`);
+      if (Array.isArray(reviewsRes.data)) {
+        approvalCount = reviewsRes.data.filter(r => r.state === "APPROVED").length;
+      }
+    } catch { /* no approvals available */ }
+
+    const verdict = evaluatePolicy(card, shieldConfig, { approvalCount });
+    console.log(`   🛡️ DiffShield verdict: ${verdict.action} — ${verdict.reason}`);
+
+    shieldBlock = formatShieldVerdict(verdict);
+
+    // Apply risk-tier label
+    if (shieldConfig.label_prs) {
+      const labelName = `changelens:${card.riskTier.toLowerCase()}`;
+      try {
+        await githubRequest("POST", `/repos/${repo}/issues/${prNumber}/labels`, { labels: [labelName] });
+        console.log(`   🏷️ Applied label: ${labelName}`);
+      } catch { /* label may not exist — that's fine */ }
+    }
+
+    // Slack notification
+    if (shieldConfig.slack_webhook && verdict.action !== "pass") {
+      await notifySlack(shieldConfig.slack_webhook, verdict, { repo, prNumber });
+      console.log(`   📢 Slack notified`);
+    }
+
+    // Should we fail?
+    if (verdict.action === "block") {
+      shieldShouldFail = true;
+    }
+  }
+
   // Post or update PR comment
   const commentMarker = "<!-- changelens-impact-card -->";
-  const commentBody = `${commentMarker}\n${markdown}`;
+  const commentBody = `${commentMarker}\n${markdown}${shieldBlock}`;
 
   // Check for existing comment
   const commentsRes = await githubRequest("GET", `/repos/${repo}/issues/${prNumber}/comments?per_page=100`);
   const existing = commentsRes.data?.find?.(c => c.body?.includes(commentMarker));
 
   if (existing) {
-    // Update existing comment
     await githubRequest("PATCH", `/repos/${repo}/issues/comments/${existing.id}`, { body: commentBody });
     console.log(`   ✅ Updated existing comment #${existing.id}`);
   } else {
-    // Create new comment
     await githubRequest("POST", `/repos/${repo}/issues/${prNumber}/comments`, { body: commentBody });
     console.log(`   ✅ Posted new Impact Card comment`);
   }
@@ -161,8 +203,13 @@ async function main() {
   setOutput("risk-tier", card.riskTier);
   setOutput("consumer-count", String(card.affectedConsumers.length));
   setOutput("impact-card", JSON.stringify(card));
+  setOutput("shield-action", shieldEnabled ? "evaluated" : "disabled");
 
-  // Fail if HIGH and configured to do so
+  // Fail if DiffShield blocks OR legacy fail-on-high is set
+  if (shieldShouldFail) {
+    console.error(`::error::🛡️ DiffShield: Merge blocked — policy violation detected.`);
+    process.exit(1);
+  }
   if (failOnHigh && card.riskTier === "HIGH") {
     console.error(`::error::Risk tier is HIGH — failing check as configured.`);
     process.exit(1);

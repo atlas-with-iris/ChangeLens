@@ -22,8 +22,9 @@ import { calculateBlastRadius } from "./core/blastRadius.js";
 import { buildImpactCard, validateImpactCard } from "./output/impactCardBuilder.js";
 import { formatPrComment } from "./output/prCommentFormatter.js";
 import { formatTerminal } from "./output/terminalFormatter.js";
+import { loadShieldConfig, evaluatePolicy } from "./shield/diffShield.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 // ── ANSI helpers (for status messages to stderr) ──────────────────────
 
@@ -125,6 +126,7 @@ async function main() {
   let projectRoot = process.cwd();
   let prId = "local";
   let format = "auto"; // auto = terminal if TTY, markdown if piped
+  let shield = false;
 
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
@@ -145,6 +147,10 @@ async function main() {
         break;
       case "--markdown":
         format = "markdown";
+        break;
+      case "--shield":
+      case "-s":
+        shield = true;
         break;
       case "--version":
       case "-v":
@@ -167,6 +173,7 @@ ${bold("Options:")}
   --format <type>    Output format: terminal | markdown | json | both
   --json             Shorthand for --format json
   --markdown         Shorthand for --format markdown
+  --shield, -s       Run DiffShield policy check (reads .changelens.yml)
   --version, -v      Show version
   --help, -h         Show this help
 
@@ -234,6 +241,30 @@ ${dim("Built by Atlas with Iris · BSL 1.1 · Static analysis · Not a guarantee
     default:
       console.log(markdown);
       break;
+  }
+
+  // DiffShield enforcement (CLI)
+  if (shield) {
+    const shieldConfig = loadShieldConfig(projectRoot);
+    const verdict = evaluatePolicy(card, shieldConfig, { approvalCount: 0 });
+
+    const shieldIcon = verdict.action === "block" ? "\x1b[31m⛔\x1b[0m" :
+                       verdict.action === "warn"  ? "\x1b[33m⚠\x1b[0m" :
+                       "\x1b[32m✅\x1b[0m";
+
+    if (isTTY) {
+      process.stderr.write(`\n  🛡️  DiffShield: ${shieldIcon} ${verdict.action.toUpperCase()}\n`);
+      process.stderr.write(`     ${dim(verdict.reason)}\n`);
+      if (shieldConfig.mode === "warn" && verdict.action !== "pass") {
+        process.stderr.write(`     ${dim("Mode: warn (advisory only). Set mode: block in .changelens.yml to enforce.")}\n`);
+      }
+    } else {
+      console.log(`\n🛡️ DiffShield: ${verdict.action.toUpperCase()} — ${verdict.reason}`);
+    }
+
+    if (verdict.action === "block") {
+      process.exit(1);
+    }
   }
 }
 
